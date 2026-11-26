@@ -1,0 +1,605 @@
+{
+  "search": {
+    "source": "snapshot",
+    "asOf": "2026-11-13",
+    "weekly": [
+      {
+        "week": "2026-08-17",
+        "clicks": 7,
+        "impressions": 65
+      },
+      {
+        "week": "2026-08-24",
+        "clicks": 8,
+        "impressions": 89
+      },
+      {
+        "week": "2026-08-31",
+        "clicks": 5,
+        "impressions": 58
+      },
+      {
+        "week": "2026-09-07",
+        "clicks": 7,
+        "impressions": 56
+      },
+      {
+        "week": "2026-09-14",
+        "clicks": 8,
+        "impressions": 27
+      },
+      {
+        "week": "2026-09-21",
+        "clicks": 8,
+        "impressions": 32
+      },
+      {
+        "week": "2026-09-28",
+        "clicks": 2,
+        "impressions": 50
+      },
+      {
+        "week": "2026-10-05",
+        "clicks": 47,
+        "impressions": 8128
+      },
+      {
+        "week": "2026-10-12",
+        "clicks": 59,
+        "impressions": 11949
+      },
+      {
+        "week": "2026-10-19",
+        "clicks": 194,
+        "impressions": 26675
+      },
+      {
+        "week": "2026-10-26",
+        "clicks": 491,
+        "impressions": 52479
+      },
+      {
+        "week": "2026-11-02",
+        "clicks": 820,
+        "impressions": 61335
+      },
+      {
+        "week": "2026-11-09",
+        "clicks": 929,
+        "impressions": 53856,
+        "partial": true
+      }
+    ],
+    "last28": {
+      "clicks": 2442,
+      "impressions": 196374,
+      "ctr": 0.012435454795441352,
+      "position": 5.547349954678317
+    },
+    "prev28": {
+      "clicks": 109,
+      "impressions": 18135,
+      "ctr": 0.006010476978218914,
+      "position": 7.922701957540666
+    },
+    "breakdownPeriod": "the last 3 months",
+    "topQueries": [
+      {
+        "label": "9903.05.93",
+        "clicks": 4,
+        "impressions": 272,
+        "position": 4.41
+      },
+      {
+        "label": "9903.05.39",
+        "clicks": 3,
+        "impressions": 312,
+        "position": 4.88
+      },
+      {
+        "label": "9903.02.76",
+        "clicks": 3,
+        "impressions": 94,
+        "position": 6.3
+      },
+      {
+        "label": "import fees from israel to usa",
+        "clicks": 3,
+        "impressions": 22,
+        "position": 3.14
+      },
+      {
+        "label": "tariffs from turkey to usa",
+        "clicks": 3,
+        "impressions": 20,
+        "position": 4.4
+      },
+      {
+        "label": "3926.90.9989",
+        "clicks": 2,
+        "impressions": 206,
+        "position": 7.93
+      },
+      {
+        "label": "9903.08.20",
+        "clicks": 2,
+        "impressions": 127,
+        "position": 6.72
+      },
+      {
+        "label": "tariff simulator",
+        "clicks": 2,
+        "impressions": 22,
+        "position": 12.32
+      },
+      {
+        "label": "hs code 9903.05.93",
+        "clicks": 2,
+        "impressions": 18,
+        "position": 2.67
+      },
+      {
+        "label": "import fees from brazil to usa",
+        "clicks": 2,
+        "impressions": 11,
+        "position": 2.91
+      },
+      {
+        "label": "tariffs from singapore to us",
+        "clicks": 2,
+        "impressions": 9,
+        "position": 1.44
+      },
+      {
+        "label": "import fees from switzerland to usa",
+        "clicks": 2,
+        "impressions": 9,
+        "position": 2.11
+      },
+      {
+        "label": "tariff calculator australia to usa",
+        "clicks": 2,
+        "impressions": 9,
+        "position": 8.78
+      },
+      {
+        "label": "section 338 list",
+        "clicks": 2,
+        "impressions": 8,
+        "position": 4.38
+      },
+      {
+        "label": "99037902",
+        "clicks": 2,
+        "impressions": 5,
+        "position": 1.4
+      },
+      {
+        "label": "9903.05.86",
+        "clicks": 1,
+        "impressions": 343,
+        "position": 6.62
+      },
+      {
+        "label": "9903.03.01",
+        "clicks": 1,
+        "impressions": 311,
+        "position": 7.03
+      },
+      {
+        "label": "9903.03.14",
+        "clicks": 1,
+        "impressions": 194,
+        "position": 3.97
+      },
+      {
+        "label": "9903.05.76",
+        "clicks": 1,
+        "impressions": 157,
+        "position": 5.01
+      },
+      {
+        "label": "9903.01.24",
+        "clicks": 1,
+        "impressions": 156,
+        "position": 5.54
+      },
+      {
+        "label": "9903.74.08",
+        "clicks": 1,
+        "impressions": 123,
+        "position": 6.54
+      },
+      {
+        "label": "3926.90.99",
+        "clicks": 1,
+        "impressions": 75,
+        "position": 6.09
+      },
+      {
+        "label": "3926.90.99.89",
+        "clicks": 1,
+        "impressions": 63,
+        "position": 6.48
+      },
+      {
+        "label": "9903.02.20",
+        "clicks": 1,
+        "impressions": 63,
+        "position": 8.87
+      },
+      {
+        "label": "simply duty",
+        "clicks": 1,
+        "impressions": 59,
+        "position": 5.76
+      }
+    ],
+    "pageGroups": [
+      {
+        "label": "Country tariff calculators",
+        "clicks": 1208,
+        "impressions": 44546
+      },
+      {
+        "label": "HTS code pages",
+        "clicks": 629,
+        "impressions": 87439
+      },
+      {
+        "label": "Tariff program guides",
+        "clicks": 262,
+        "impressions": 16280
+      },
+      {
+        "label": "Chapter 99 tariff headings",
+        "clicks": 182,
+        "impressions": 13432
+      },
+      {
+        "label": "Home page",
+        "clicks": 115,
+        "impressions": 499
+      },
+      {
+        "label": "Tariff news",
+        "clicks": 111,
+        "impressions": 10169
+      },
+      {
+        "label": "Other pages",
+        "clicks": 40,
+        "impressions": 6896
+      },
+      {
+        "label": "US tariff calculator",
+        "clicks": 29,
+        "impressions": 1693
+      },
+      {
+        "label": "Guides and comparisons",
+        "clicks": 14,
+        "impressions": 1636
+      },
+      {
+        "label": "Calculator guides",
+        "clicks": 4,
+        "impressions": 191
+      }
+    ],
+    "topPages": [
+      {
+        "label": "/duty-calculator/china",
+        "clicks": 157,
+        "impressions": 7004,
+        "position": 5.09
+      },
+      {
+        "label": "/duty-calculator/italy",
+        "clicks": 128,
+        "impressions": 3692,
+        "position": 4.12
+      },
+      {
+        "label": "/",
+        "clicks": 115,
+        "impressions": 499,
+        "position": 8.76
+      },
+      {
+        "label": "/duty-calculator/canada",
+        "clicks": 110,
+        "impressions": 3794,
+        "position": 5.21
+      },
+      {
+        "label": "/tariffs/section-338-canada",
+        "clicks": 68,
+        "impressions": 1089,
+        "position": 3.87
+      },
+      {
+        "label": "/duty-calculator/germany",
+        "clicks": 67,
+        "impressions": 2552,
+        "position": 4.75
+      },
+      {
+        "label": "/duty-calculator/taiwan",
+        "clicks": 62,
+        "impressions": 1869,
+        "position": 4.29
+      },
+      {
+        "label": "/duty-calculator/india",
+        "clicks": 61,
+        "impressions": 1868,
+        "position": 4.22
+      },
+      {
+        "label": "/duty-calculator/turkey",
+        "clicks": 59,
+        "impressions": 1982,
+        "position": 4.24
+      },
+      {
+        "label": "/duty-calculator/thailand",
+        "clicks": 53,
+        "impressions": 2129,
+        "position": 4.49
+      },
+      {
+        "label": "/duty-calculator/france",
+        "clicks": 46,
+        "impressions": 2080,
+        "position": 4.75
+      },
+      {
+        "label": "/duty-calculator/brazil",
+        "clicks": 41,
+        "impressions": 1310,
+        "position": 4.26
+      },
+      {
+        "label": "/tariffs/section-232-steel-aluminum-copper",
+        "clicks": 39,
+        "impressions": 3755,
+        "position": 5.28
+      },
+      {
+        "label": "/duty-calculator/spain",
+        "clicks": 39,
+        "impressions": 1263,
+        "position": 4.87
+      },
+      {
+        "label": "/tariffs/section-301-forced-labor",
+        "clicks": 38,
+        "impressions": 2045,
+        "position": 5.94
+      }
+    ],
+    "countries": [
+      {
+        "label": "United States",
+        "clicks": 1783,
+        "impressions": 162688,
+        "position": 5.63
+      },
+      {
+        "label": "Canada",
+        "clicks": 266,
+        "impressions": 14496,
+        "position": 5.43
+      },
+      {
+        "label": "India",
+        "clicks": 51,
+        "impressions": 3353,
+        "position": 6.33
+      },
+      {
+        "label": "United Kingdom",
+        "clicks": 50,
+        "impressions": 2410,
+        "position": 6.07
+      },
+      {
+        "label": "Taiwan",
+        "clicks": 24,
+        "impressions": 916,
+        "position": 5.31
+      },
+      {
+        "label": "Mexico",
+        "clicks": 23,
+        "impressions": 2660,
+        "position": 5.65
+      },
+      {
+        "label": "Australia",
+        "clicks": 23,
+        "impressions": 1282,
+        "position": 6.13
+      },
+      {
+        "label": "South Korea",
+        "clicks": 19,
+        "impressions": 880,
+        "position": 5.39
+      },
+      {
+        "label": "Netherlands",
+        "clicks": 17,
+        "impressions": 656,
+        "position": 5.48
+      },
+      {
+        "label": "Italy",
+        "clicks": 16,
+        "impressions": 770,
+        "position": 5.6
+      },
+      {
+        "label": "Malaysia",
+        "clicks": 15,
+        "impressions": 800,
+        "position": 7.29
+      },
+      {
+        "label": "China",
+        "clicks": 15,
+        "impressions": 791,
+        "position": 6.03
+      }
+    ],
+    "devices": [
+      {
+        "label": "Desktop",
+        "clicks": 2042,
+        "impressions": 191561,
+        "position": 5.78
+      },
+      {
+        "label": "Mobile",
+        "clicks": 520,
+        "impressions": 22580,
+        "position": 5.68
+      },
+      {
+        "label": "Tablet",
+        "clicks": 23,
+        "impressions": 669,
+        "position": 5.32
+      }
+    ],
+    "pagesCapped": true
+  },
+  "ai": {
+    "source": "snapshot",
+    "asOf": "2026-11-13",
+    "weekly": [
+      {
+        "week": "2026-08-17",
+        "impressions": 6
+      },
+      {
+        "week": "2026-08-24",
+        "impressions": 3
+      },
+      {
+        "week": "2026-08-31",
+        "impressions": 1
+      },
+      {
+        "week": "2026-09-07",
+        "impressions": 2
+      },
+      {
+        "week": "2026-09-14",
+        "impressions": 3
+      },
+      {
+        "week": "2026-09-21",
+        "impressions": 4
+      },
+      {
+        "week": "2026-09-28",
+        "impressions": 9
+      },
+      {
+        "week": "2026-10-05",
+        "impressions": 619
+      },
+      {
+        "week": "2026-10-12",
+        "impressions": 1036
+      },
+      {
+        "week": "2026-10-19",
+        "impressions": 3733
+      },
+      {
+        "week": "2026-10-26",
+        "impressions": 10838
+      },
+      {
+        "week": "2026-11-02",
+        "impressions": 18062
+      },
+      {
+        "week": "2026-11-09",
+        "impressions": 19235,
+        "partial": true
+      }
+    ]
+  },
+  "audience": {
+    "source": "snapshot",
+    "asOf": "2026-11-18",
+    "weekly": [
+      {
+        "week": "2026-11-02",
+        "visitors": 2814,
+        "pageViews": 4119,
+        "calculatorResults": 1321
+      },
+      {
+        "week": "2026-11-09",
+        "visitors": 4335,
+        "pageViews": 5537,
+        "calculatorResults": 1701
+      },
+      {
+        "week": "2026-11-16",
+        "visitors": 1969,
+        "pageViews": 2570,
+        "calculatorResults": 886,
+        "partial": true
+      }
+    ],
+    "countries": [
+      {
+        "label": "United States",
+        "share": 0.514
+      },
+      {
+        "label": "Canada",
+        "share": 0.042
+      },
+      {
+        "label": "Brazil",
+        "share": 0.041
+      },
+      {
+        "label": "China",
+        "share": 0.038
+      },
+      {
+        "label": "United Kingdom",
+        "share": 0.037
+      },
+      {
+        "label": "Germany",
+        "share": 0.029
+      },
+      {
+        "label": "India",
+        "share": 0.016
+      },
+      {
+        "label": "Colombia",
+        "share": 0.014
+      },
+      {
+        "label": "Vietnam",
+        "share": 0.013
+      },
+      {
+        "label": "Mexico",
+        "share": 0.012
+      }
+    ],
+    "countryBasis": "visitors"
+  }
+}
