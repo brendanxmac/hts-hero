@@ -107,7 +107,7 @@ export const SalePopup = ({ serverLive = false }: { serverLive?: boolean }) => {
             <Dialog.Title className={`${tt.display} m-0 text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl`}>
               <span className="text-warning">{SALE.percentOff}% Off</span>
               <br />
-              Tariff Alerts, Audits, $ Savings
+              Tariff Alerts, Audits, & Savings
             </Dialog.Title>
             <p className="m-0 max-w-xl text-lg leading-relaxed text-white/75">
               Every annual plan, Essentials and Pro, any size. One week only.
